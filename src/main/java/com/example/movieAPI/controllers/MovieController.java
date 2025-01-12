@@ -48,4 +48,24 @@ public class MovieController {
     public ResponseEntity<ApiResponse> getMovieHandler(@PathVariable Integer movieId) {
         return ResponseEntity.ok(new ApiResponse("get movie successfully by Id " + movieId,  movieService.getMovie(movieId)));
     }
+
+    @PutMapping("/update/{movieId}")
+    public ResponseEntity<ApiResponse> updateMovieHandler(@PathVariable Integer movieId,
+                                                          @RequestPart(required = false) MultipartFile file,
+                                                          @RequestPart String updateMovie
+                                                          ) throws IOException {
+        if (file == null || file.isEmpty()) {
+            file = null;
+        }
+
+        MovieDto movieDto = convertToMovieDto(updateMovie);
+
+        return ResponseEntity.ok(new ApiResponse("update movie successfully by Id " + movieId,  movieService.updateMovie(movieId, file, movieDto)));
+    }
+
+    @DeleteMapping("/delete/{movieId}")
+    public ResponseEntity<ApiResponse> deleteMovieHandler(@PathVariable Integer movieId) throws IOException {
+        movieService.deleteMovie(movieId);
+        return ResponseEntity.ok(new ApiResponse("Delete movie successfully by Id " + movieId,  null));
+    }
 }

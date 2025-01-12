@@ -116,4 +116,53 @@ public class MovieServiceImplement implements MovieService{
         // return
         return response;
     }
+
+    @Override
+    public MovieDto updateMovie(Integer movieId, MultipartFile file, MovieDto updateMovie) throws IOException {
+        // check movie exists
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new MovieNotFoundException("Movie does not exist " + movieId));
+        String fileName = movie.getPoster();
+
+        // check file exists
+        if (file != null) {
+            Files.deleteIfExists(Paths.get(path + File.separator + fileName));
+            fileName = fileService.uploadFile(path, file);
+        }
+        updateMovie.setPoster(fileName);
+
+        // update movie
+        movie.setTitle(updateMovie.getTitle());
+        movie.setStudio(updateMovie.getStudio());
+        movie.setDirector(updateMovie.getDirector());
+        movie.setMovieCast(updateMovie.getMovieCast());
+        movie.setReleaseYear(updateMovie.getReleaseYear());
+        movie.setPoster(updateMovie.getPoster());
+        movieRepository.save(movie);
+
+        String posterUrl = baseUrl + "/file/" + movie.getPoster();
+
+        // map to dto and return
+        return new MovieDto(
+                movie.getMovieId(),
+                movie.getTitle(),
+                movie.getDirector(),
+                movie.getStudio(),
+                movie.getMovieCast(),
+                movie.getReleaseYear(),
+                movie.getPoster(),
+                posterUrl
+        );
+    }
+
+    @Override
+    public void deleteMovie(Integer movieId) throws IOException {
+        // check movie exits
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new MovieNotFoundException("Movie does not exist " + movieId));
+
+        Files.deleteIfExists(Paths.get(path + File.separator + movie.getPoster()));
+
+        movieRepository.delete(movie);
+    }
 }
