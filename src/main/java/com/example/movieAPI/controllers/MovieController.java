@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,11 +25,13 @@ public class MovieController {
         this.movieService = movieService;
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse> getALlMovies() {
         return ResponseEntity.ok(new ApiResponse("get all movies successfully",  movieService.getAllMovie()));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/add-movie")
     public ResponseEntity<ApiResponse> addMovieHandler(@RequestPart MultipartFile file,
                                                     @RequestPart String movieDto) throws IOException, EmptyFileException {

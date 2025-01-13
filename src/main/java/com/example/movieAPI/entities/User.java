@@ -40,7 +40,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-
+    @OneToOne(mappedBy = "user")
+    private ForgotPassword forgotPassword;
     ///  Return user's authorities
     /// GrantedAuthority is an interface in java spring boot, presents for a particular role
     @Override

@@ -3,6 +3,7 @@ package com.example.movieAPI.controllers;
 import com.example.movieAPI.dtos.request.LoginRequest;
 import com.example.movieAPI.dtos.request.RefreshTokenRequest;
 import com.example.movieAPI.dtos.request.RegisterRequest;
+import com.example.movieAPI.dtos.response.ApiResponse;
 import com.example.movieAPI.dtos.response.AuthResponse;
 import com.example.movieAPI.entities.RefreshToken;
 import com.example.movieAPI.entities.User;
@@ -27,26 +28,26 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
-        return ResponseEntity.ok(authService.register(registerRequest));
+    public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest registerRequest) {
+        return ResponseEntity.ok(new ApiResponse("Register successfully" ,authService.register(registerRequest)));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(authService.login(loginRequest));
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(new ApiResponse("Login successfully", authService.login(loginRequest)));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<ApiResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
 
         RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(refreshTokenRequest.getRefreshToken());
         User user = refreshToken.getUser();
 
         String accessToken = jwtService.generateToken(user);
 
-        return ResponseEntity.ok(AuthResponse.builder()
+        return ResponseEntity.ok(new ApiResponse("Refresh token successfully", AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getRefreshToken())
-                .build());
+                .build()));
     }
 }
